@@ -1,3 +1,5 @@
+import { navigate, loginCache } from './util.js';
+
 const ENDPOINTS = {
   'Login': 'https://back-login.vercel.app/usuarios',
   'Get': 'https://projeto-integrado-avaliacao.azurewebsites.net/projeto2/fecaf/listar/contatos',
@@ -59,20 +61,23 @@ export const callEndpoint = (
 };
 
 export const Login = async (email, senha) => {
-  const cache_login = localStorage.getItem('usuario_logado');
-  if (cache_login) {
+  const login_cache = loginCache();
+  if (login_cache) {
     console.log('utilizando usuário logado no cache');
-    return JSON.parse(cache_login);
+    navigate('/');
   }
 
   const dados_login = await callEndpoint('Login', 'GET');
   if (!dados_login || !dados_login.length) throw new Error('erro ao buscar dados para efetuar o login');
+  console.log(dados_login);
 
   const login_valido = dados_login.find(f => f.email == email && f.senha == senha);
   if (!login_valido) throw new Error('email ou senha inválidos');
 
   console.log('cacheando usuario');
   localStorage.setItem('usuario_logado', JSON.stringify(login_valido))
+
+  navigate('/');
 
   return login_valido;
 }
@@ -93,36 +98,32 @@ export const BuscarContato = async (id) => {
   return dados_contato.contato[0];
 }
 
-export const CadastrarContato = async ({ nome, email, telefone, image, senha }) => {
-  if (!(nome && email && telefone && image)) throw new Error('dados do usuário inválidos');
+export const CadastrarContato = async ({ nome, email, telefone, image }) => {
+  if (!(nome && email && telefone && image))
+    throw new Error('dados do usuário inválidos');
 
-
-  const dados_contato = await callEndpoint('Post', 'POST', null, { nome, email, telefone, image, senha });
-  console.log(dados_contato);
+  const dados_contato = await callEndpoint('Post', 'POST', null, { nome, email, telefone, image });
 
   return dados_contato;
 }
 
-export const AtualizarContato = async (id, { nome, email, telefone, image, senha }) => {
+export const AtualizarContato = async ({ id, nome, email, telefone, image }) => {
   if (!(nome && email && telefone && image && id))
     throw new Error('dados do usuário inválidos');
 
 
-  const dados_contato = await callEndpoint('Put', 'PUT', { id }, { nome, email, telefone, image, senha });
+  const dados_contato = await callEndpoint('Put', 'PUT', { id }, { nome, email, telefone, image });
   console.log(dados_contato);
 
   return dados_contato;
 }
 
-// (async () => {
-//   // console.log(await BuscarListaContato());
-//   // console.log(await BuscarContato(2));
-//   const usuario_test = {
-//     nome: 'teste victor 1',
-//     email: 'testevictor1@test.com',
-//     telefone: '6942069420',
-//     image: 'testeimagem',
-//   }
-//   // await CadastrarContato(usuario_test);
-//   await AtualizarContato(10, usuario_test);
-// })();
+export const ExcluirContato = async (id) => {
+  if (!id)
+    throw new Error('id não informado');
+
+
+  const dados_contato = await callEndpoint('Delete', 'DELETE', { id });
+
+  return dados_contato;
+}

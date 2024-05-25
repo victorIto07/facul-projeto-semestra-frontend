@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+  <link rel="icon" sizes="192x192"
+    href="https://static.wixstatic.com/media/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp"
+    type="image/png" />
+  <link rel="shortcut icon"
+    href="https://static.wixstatic.com/media/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp"
+    type="image/png" />
+  <link rel="apple-touch-icon"
+    href="https://static.wixstatic.com/media/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp"
+    type="image/png" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+
+  <!-- SLIDER ASSETS -->
+  <script src="/assets/js/splide.min.js"></script>
+  <link href="/assets/css/splide.min.css" rel="stylesheet" />
+
+  <link href="/assets/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="mb-10 2xl:container 2xl:mx-auto">
+    <div class="bg-white rounded shadow-lg py-5 px-7">
+      <nav class="flex justify-between items-center">
+        <a href="/">
+          <div class="flex items-center space-x-3 lg:pr-16 pr-6">
+            <img src="/assets/img/favicon.ico" class="size-16" alt="" />
+            <h2 class="text-5xl leading-6 text-gray-800">
+              FecafBook
+            </h2>
+          </div>
+        </a>
+        <h3 id="saudacoes"></h3>
+      </nav>
+    </div>
+  </div>
+
+  <!-- <div class="animate__animated mb-10 animate__bounceInDown px-56"> -->
+  <!--   <section class="splide no-pag out" id="splide-carrossel" aria-label="Splide Basic HTML Example"> -->
+  <!--     <div class="splide__track h-fit"> -->
+  <!--       <ul id="slider-contatos" class="splide__list"> -->
+  <!--       </ul> -->
+  <!--     </div> -->
+  <!--   </section> -->
+  <!-- </div> -->
+
+  <div class="flex justify-start px-56">
+    <a class="flex items-center gap-2 select-none rounded-lg bg-gradient-to-tr from-green-400 to-green-300 p-3 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+      href="/cadastro">
+      novo contato
+      <svg width="20" height="20" viewBox="-2.4 -2.4 28.80 28.80" fill="none" xmlns="http://www.w3.org/2000/svg"
+        stroke="#fff">
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC"
+          stroke-width="0.8640000000000001"></g>
+        <g id="SVGRepo_iconCarrier">
+          <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="#fff" stroke-width="2.4"
+            stroke-linecap="round"></path>
+          <path
+            d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C21.5093 4.43821 21.8356 5.80655 21.9449 8"
+            stroke="#fff" stroke-width="2.4" stroke-linecap="round"></path>
+        </g>
+      </svg>
+    </a>
+  </div>
+
+  <div id="grid-contatos" class="grid grid-cols-3 gap-1 px-56">
+  </div>
+
+</body>
+<script type="module">
+  import {splide_slide, card_contato} from '/assets/js/modelos-html.js'
+  import {BuscarListaContato, AtualizarContato} from '/assets/js/servicos.js';
+  import {validarLogin} from '/assets/js/util.js';
+
+  const usuario = validarLogin();
+
+  const carregarSlider = async (contatos) => {
+    const _slider = document.getElementById('slider-contatos');
+    if (!_slider) return
+
+    for (let contato of contatos) {
+      let template_slide = splide_slide(contato);
+      if (!template_slide) continue
+
+      _slider.appendChild(template_slide);
+    }
+
+    var splide = new Splide('#splide-carrossel', {"type": "loop", "autoplay": false, "perPage": 3});
+    splide.mount();
+  }
+
+  const carregarGrid = async (contatos) => {
+    const _grid = document.getElementById('grid-contatos');
+    if (!_grid) return
+
+    for (let contato of contatos) {
+      let template_slide = card_contato(contato);
+      if (!template_slide) continue
+
+      _grid.appendChild(template_slide);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async (event) => {
+    const contatos = await BuscarListaContato();
+
+    carregarSlider(contatos);
+    carregarGrid(contatos);
+  });
+
+</script>
+
+</html>
