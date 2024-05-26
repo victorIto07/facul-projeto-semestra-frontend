@@ -1,4 +1,4 @@
-import { navigate, loginCache } from './util.js';
+import { navigate, loginCache, wait } from './util.js';
 
 const ENDPOINTS = {
   'Login': 'https://back-login.vercel.app/usuarios',
@@ -46,12 +46,12 @@ export const callEndpoint = (
 
       const res = await fetch(url, params_res);
 
-      const json = await res.json();
+      const json = await res.json();;
 
       if (!json.status_code || json.status_code == 200)
         resolve(json);
       else
-        reject(json);
+        reject(new Error(json.message));
 
     } catch (error) {
       console.log(`error on request: ${method}-${url}`);
@@ -69,7 +69,6 @@ export const Login = async (email, senha) => {
 
   const dados_login = await callEndpoint('Login', 'GET');
   if (!dados_login || !dados_login.length) throw new Error('erro ao buscar dados para efetuar o login');
-  console.log(dados_login);
 
   const login_valido = dados_login.find(f => f.email == email && f.senha == senha);
   if (!login_valido) throw new Error('email ou senha inválidos');
@@ -80,6 +79,12 @@ export const Login = async (email, senha) => {
   navigate('/');
 
   return login_valido;
+}
+
+export const Logon = async (dados_logon) => {
+  localStorage.setItem('usuario_logado', JSON.stringify(dados_logon));
+  await wait(1000);
+  navigate('/');
 }
 
 export const BuscarListaContato = async () => {
@@ -102,9 +107,7 @@ export const CadastrarContato = async ({ nome, email, telefone, image }) => {
   if (!(nome && email && telefone && image))
     throw new Error('dados do usuário inválidos');
 
-  const dados_contato = await callEndpoint('Post', 'POST', null, { nome, email, telefone, image });
-
-  return dados_contato;
+  return await callEndpoint('Post', 'POST', null, { nome, email, telefone, image });
 }
 
 export const AtualizarContato = async ({ id, nome, email, telefone, image }) => {
@@ -112,18 +115,12 @@ export const AtualizarContato = async ({ id, nome, email, telefone, image }) => 
     throw new Error('dados do usuário inválidos');
 
 
-  const dados_contato = await callEndpoint('Put', 'PUT', { id }, { nome, email, telefone, image });
-  console.log(dados_contato);
-
-  return dados_contato;
+  return await callEndpoint('Put', 'PUT', { id }, { nome, email, telefone, image });
 }
 
 export const ExcluirContato = async (id) => {
   if (!id)
     throw new Error('id não informado');
 
-
-  const dados_contato = await callEndpoint('Delete', 'DELETE', { id });
-
-  return dados_contato;
+  return await callEndpoint('Delete', 'DELETE', { id });
 }

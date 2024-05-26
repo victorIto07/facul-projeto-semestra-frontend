@@ -5,20 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title></title>
-  <link rel="icon" sizes="192x192"
-    href="https://static.wixstatic.com/media/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp/v1/fill/w_192%2Ch_192%2Clg_1%2Cusm_0.66_1.00_0.01/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp"
-    type="image/png" />
-  <link rel="shortcut icon"
-    href="https://static.wixstatic.com/media/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp/v1/fill/w_32%2Ch_32%2Clg_1%2Cusm_0.66_1.00_0.01/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp"
-    type="image/png" />
-  <link rel="apple-touch-icon"
-    href="https://static.wixstatic.com/media/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp/v1/fill/w_180%2Ch_180%2Clg_1%2Cusm_0.66_1.00_0.01/bbe396_7e9235d95ed1449da92e1f6ee1174698%7Emv2.webp"
-    type="image/png" />
+  <link rel="icon" href="/assets/img/favicon.ico" />
+  <link rel="shortcut icon" href="/assets/img/favicon.ico" />
+  <link rel="apple-touch-icon" href="/assets/img/favicon.ico" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
 
-  <!-- SLIDER ASSETS -->
   <script src="/assets/js/splide.min.js"></script>
   <link href="/assets/css/splide.min.css" rel="stylesheet" />
 
@@ -26,117 +19,10 @@
 </head>
 
 <body>
-  <div class="mb-10 2xl:container 2xl:mx-auto">
-    <div class="bg-white rounded shadow-lg py-5 px-7">
-      <nav class="flex justify-between">
-        <a href="/">
-          <div class="flex items-center space-x-3 lg:pr-16 pr-6">
-            <img src="/assets/img/favicon.ico" class="size-16" alt="" />
-            <h2 class="text-5xl leading-6 text-gray-800">
-              FecafBook
-            </h2>
-          </div>
-        </a>
-      </nav>
-    </div>
-  </div>
-  <div id="teste" class="w-96 bg-white rounded shadow-lg mx-auto relative">
+  <div id="content-cadastro">
   </div>
 </body>
 
-<script type="module">
-  import {BuscarListaContato, BuscarContato, AtualizarContato, CadastrarContato, ExcluirContato} from '/assets/js/servicos.js';
-  import {card_contato_cadastro, spinner, loadingSpinner} from '/assets/js/modelos-html.js';
-  import {wait, debounce, createElementFromString, formData, navigate, validarLogin} from '/assets/js/util.js';
-
-  const usuario = validarLogin();
-
-  const carregarContato = async (id) => {
-    const contato = id ? await BuscarContato(id) : null;
-    const template_contato = card_contato_cadastro(contato);
-
-    document.getElementById('teste').innerHTML = template_contato;
-
-    await wait(100);
-
-
-  }
-
-  const prepararMudancasFoto = () => {
-    const botao_editar_foto = document.getElementById('botao-editar-foto');
-    botao_editar_foto.addEventListener('click', () => {
-      const field_foto = document.getElementById('field-foto');
-      field_foto.classList.toggle('hidden');
-      input_link_foto.focus();
-    });
-
-    const input_link_foto = document.getElementById('input-foto');
-
-    const debounceLinkFoto = debounce((link) => {
-      const foto = document.getElementById('foto');
-      foto.firstElementChild.src = link;
-      foto.classList.remove('hidden');
-    }, 500);
-
-    input_link_foto.addEventListener('input', () => {
-      debounceLinkFoto(input_link_foto.value);
-    });
-  }
-
-  const prepararForm = () => {
-    const form = document.getElementById('formulario-cadastro');
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      const spinner_loader = document.getElementById('teste').appendChild(loadingSpinner());
-
-      try {
-        const dados_contato = formData({form});
-        let retorno_api;
-
-        if (dados_contato.id)
-          retorno_api = await AtualizarContato(dados_contato);
-        else
-          retorno_api = await CadastrarContato(dados_contato);
-
-        navigate('/');
-        return
-      } catch (e) {
-        console.error(e);
-      }
-
-      spinner_loader.remove();
-    });
-  }
-
-  const prepararExclusao = (_id) => {
-    const botao_excluir = document.getElementById('botao-excluir');
-    botao_excluir.addEventListener('click', async () => {
-      const spinner_loader = document.getElementById('teste').appendChild(loadingSpinner());
-
-      try {
-        await ExcluirContato(_id);
-        navigate('/');
-      } catch (e) {
-        console.error(e);
-      }
-
-      spinner_loader.remove();
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", async (event) => {
-    document.getElementById('teste').innerHTML = spinner();
-
-    const url_params = new URLSearchParams(window.location.search);
-    const _id = url_params.get('id');
-
-    await carregarContato(_id);
-
-    prepararMudancasFoto();
-    prepararForm();
-    prepararExclusao(_id);
-  });
-</script>
+<script type="module" src="/assets/js/carregamento-paginas/cadastro.js"></script>
 
 </html>
