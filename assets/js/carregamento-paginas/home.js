@@ -1,4 +1,4 @@
-import { splide_slide, card_contato, botaoCustom, inputCustom, cardCustom, alertCustom, spinner } from '/assets/js/modelos-html.js'
+import { splideSlide, cardContato, botaoCustom, inputCustom, cardCustom, alertCustom, spinner } from '/assets/js/modelos-html.js'
 import { BuscarListaContato } from '/assets/js/servicos.js';
 import { validarLogin, prepararHeader, debounce, wait } from '/assets/js/util.js';
 
@@ -18,20 +18,20 @@ const carregarFiltro = () => {
   if (!_filtro) return
 
   const _botao_filtro = botaoCustom({ msg: 'Novo Contato', type: 'success', href: '/cadastro' });
-  const _input_filtro = inputCustom({ id: 'filtro', label: 'Filtro' });
+  let _input_filtro = inputCustom({ id: 'filtro', label: 'Filtro' });
 
   const _card = cardCustom(_botao_filtro + _input_filtro, { col: false, center: false });
   _card.classList.add('gap-3');
 
   _filtro.appendChild(_card);
 
-  const input_filtro = _filtro.querySelector('#input-filtro');
+  _input_filtro = _filtro.querySelector('#input-filtro');
 
   const debounce_filtro = debounce(async (filtro) => {
     carregarGrid(filtro);
   });
 
-  input_filtro.addEventListener('input', async (event) => {
+  _input_filtro.addEventListener('input', async (event) => {
     debounce_filtro(event.target.value);
   })
 }
@@ -43,20 +43,21 @@ const carregarSlider = async () => {
   const contatos = await BuscarListaContato();
 
   for (let contato of contatos) {
-    let template_slide = splide_slide(contato);
-    if (!template_slide) continue
+    let _template_slide = splideSlide(contato);
+    if (!_template_slide) continue
 
-    _slider.appendChild(template_slide);
+    _slider.appendChild(_template_slide);
   }
 
-  var splide = new Splide('#splide-carrossel', { 'type': 'loop', 'autoplay': true, 'interval': 2500, 'gap': '20px', 'arrows': false });
-  splide.mount();
+  const _splide = new Splide('#splide-carrossel', { 'type': 'loop', 'autoplay': true, 'interval': 2500, 'gap': '20px', 'arrows': false });
+  _splide.mount();
 }
 
 const carregarGrid = async (filtro) => {
   const _grid = document.getElementById('grid-contatos');
-  _grid.classList.add('grid', 'grid-cols-3', 'gap-1')
   if (!_grid) return
+
+  _grid.classList.add('grid', 'grid-cols-3', 'gap-1');
   _grid.innerHTML = '';
 
   const _gridNovoConteudo = _grid.cloneNode(true);
@@ -66,41 +67,44 @@ const carregarGrid = async (filtro) => {
   try {
     let contatos = await BuscarListaContato();
 
-    if (filtro) {
-      const contatos_filtrados = contatos.filter(contato => {
-        return (
-          contato.nome.toLowerCase().includes(filtro.toLowerCase()) ||
-          contato.email.toLowerCase().includes(filtro.toLowerCase()) ||
-          contato.telefone.toLowerCase().includes(filtro.toLowerCase())
-        )
-      });
+    if (!contatos || !contatos.length) {
+      _gridNovoConteudo.classList.remove('grid', 'grid-cols-3', 'gap-1');
+      _gridNovoConteudo.appendChild(alertCustom({ type: 'info', msg: 'Nenhum contato foi retornado' }));
+    }
+    else if (filtro) {
+      contatos = contatos.filter(contato =>
+        contato.nome == filtro ||
+        contato.email == filtro ||
+        contato.telefone == filtro ||
+        contato.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+        contato.email.toLowerCase().includes(filtro.toLowerCase()) ||
+        contato.telefone.toLowerCase().includes(filtro.toLowerCase())
+      );
 
-      if (contatos_filtrados.length)
-        contatos = contatos_filtrados;
-      else {
+      if (!contatos.length) {
         const _field_filtro = document.getElementById('field-filtro');
 
-        const _alert = _field_filtro.appendChild(alertCustom({ msg: 'Filtro desconsideirado por falta de resultados.', type: 'info' }));
+        const _alert = _field_filtro.appendChild(alertCustom({ msg: 'Seu filtro desconsideirou todos os resultados.', type: 'info' }));
         wait(3000).then(() => { _alert.remove() });
 
-        const _filtro = document.querySelector('#input-filtro')
-        if (!filtro) return
+        // const _filtro = document.querySelector('#input-filtro')
+        // if (!filtro) return
 
-        _filtro.value = '';
+        // _filtro.value = '';
+      }
+    }
+
+    if (contatos.length)
+      for (let contato of contatos) {
+        let template_card = cardContato(contato);
+        if (!template_card) continue
+
+        _gridNovoConteudo.appendChild(template_card);
       }
 
-    }
-
-    for (let contato of contatos) {
-      let template_card = card_contato(contato);
-      if (!template_card) continue
-
-      _gridNovoConteudo.appendChild(template_card);
-    }
-
   } catch (error) {
-    _gridNovoConteudo.appendChild(alertCustom({ type: 'danger', msg: error.message || error.toString() }));
     _gridNovoConteudo.classList.remove('grid', 'grid-cols-3', 'gap-1');
+    _gridNovoConteudo.appendChild(alertCustom({ type: 'danger', msg: error.message || error.toString() }));
   }
 
   _grid.replaceWith(_gridNovoConteudo);

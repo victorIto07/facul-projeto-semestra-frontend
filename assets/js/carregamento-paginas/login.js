@@ -1,5 +1,5 @@
 import { Login } from '/assets/js/servicos.js';
-import { loadingSpinner, loginCard } from '/assets/js/modelos-html.js';
+import { carregamentoSpinner, loginCard } from '/assets/js/modelos-html.js';
 import { formData, navigate, validarLogin } from '/assets/js/util.js';
 
 const usuario_logado = validarLogin();
@@ -11,20 +11,20 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 const prepararForm = () => {
-  const form = document.getElementById('formulario-login');
+  const _form = document.getElementById('formulario-login');
 
-  form.addEventListener('submit', async (event) => {
+  _form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const spinner_loader = document.getElementById('card').appendChild(loadingSpinner());
+    const _spinner_loader = document.getElementById('card').appendChild(carregamentoSpinner());
 
     try {
-      const dados_login = formData({ form });
+      const dados_login = formData({ form: _form });
       await Login(dados_login['email'], dados_login['senha']);
     } catch (e) {
       document.getElementById('erro-requisicao').innerText = '* ' + e.message || e;
-      spinner_loader.remove();
     }
 
+    _spinner_loader.remove();
   });
 }

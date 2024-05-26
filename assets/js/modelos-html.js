@@ -41,6 +41,7 @@ const colorTypes = (type) => {
   return { color_from, color_to, text_color, icon };
 }
 
+// COMPONENTES SOLTOS
 export const inputCustom = ({ value = '', type = 'text', placeholder, id, hidden, tostring = true, label, required = true }) => {
   const string_html = `
   <div id="input-custom-${id}" class="relative min-w-[200px] h-10 ${hidden ? 'hidden' : ''}">
@@ -58,13 +59,14 @@ export const botaoCustom = ({ tostring = true, small, msg, href, id, type = 'inf
   const string_html = `
   <${href ? 'a' : 'button'} id="botao-${id}" ${href ? `href=${href}` : `type=${buttonType}`} class="${hidden ? 'hidden' : ''} ${extraClasses} flex items-center gap-2 select-none rounded-lg bg-gradient-to-tr from-${color_from} to-${color_to} p-${small ? 2 : 3} text-center align-middle font-sans ${small ? 'text-[10px] leading-0' : 'text-xs'} font-bold uppercase text-${text_color} shadow-lg shadow-gray-900/10 transition-all hover:shadow-lg hover:shadow-gray-900/20 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none">
     ${msg}
-  </${href ? 'a' : 'button'}>`;
+  </${href ? 'a' : 'button'}>
+`;
 
   return tostring ? string_html : createElementFromString(string_html);
 }
 
 export const cardCustom = (html, { center = true, col = true, extraClasses = '' } = {}) => createElementFromString(`
-<div class="relative p-4 ${center ? 'my-10 mx-auto flex w-85' : ''} flex${col ? '-col' : ''} ${col ? '' : 'items-center'} overflow-hidden rounded-lg border border-gray-100 bg-white shadow-lg transition-all ${extraClasses}">
+  <div class="relative p-4 ${center ? 'my-10 mx-auto flex w-85' : ''} flex${col ? '-col' : ''} ${col ? '' : 'items-center'} overflow-hidden rounded-lg border border-gray-100 bg-white shadow-lg transition-all ${extraClasses}">
     ${html}
   </div>
 `);
@@ -85,7 +87,8 @@ export const headerCustom = () => createElementFromString(`
         </div>
       </nav>
     </div>
-  </div>`);
+  </div>
+`);
 
 export const alertCustom = ({ msg = 'Oops.. Algo deu errado', tostring = false, center = false, type = 'warning' } = {}) => {
   const { color_from, color_to, icon } = colorTypes(type);
@@ -102,7 +105,17 @@ export const alertCustom = ({ msg = 'Oops.. Algo deu errado', tostring = false, 
   return tostring ? string_html : createElementFromString(string_html);
 };
 
-export const splide_slide = (contato) => contato ? createElementFromString(`
+export const spinner = (absolute) => `
+  <div role="status" class="${absolute ? 'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2' : 'py-20 flex justify-center'}">
+    <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+    </svg>
+    <span class="sr-only">Loading...</span>
+  </div>
+`;
+
+// COMPONENTES COMPLEXOS
+export const splideSlide = (contato) => contato ? createElementFromString(`
   <li class="splide__slide h-fit">
     <div class="relative grid grid-cols-2 items-center gap-5 p-4 flex w-96 flex-col overflow-hidden rounded-lg border border-gray-100 bg-white transition-all">
       <div>
@@ -135,7 +148,15 @@ export const splide_slide = (contato) => contato ? createElementFromString(`
   </li>
 `) : null;
 
-export const card_contato = (contato) => contato ? cardCustom(`
+export const carregamentoSpinner = () => createElementFromString(`
+  <div class="absolute w-full h-full top-0 left-0">
+    <div class="acrylic">
+    </div>
+    ${spinner(true)}
+  </div>
+`);
+
+export const cardContato = (contato) => contato ? cardCustom(`
   <div class="relative flex h-60 overflow-hidden rounded-lg" id="foto">
     <img
       class="object-cover rounded-full aspect-square mx-auto"
@@ -153,14 +174,15 @@ export const card_contato = (contato) => contato ? cardCustom(`
     ${contato.nome}
   </strong>
   <h4 class="text-xl text-gray-400 tracking-tight truncate">
-    ${contato.telefone}
+    <strong class="font-bold text-black mr-1">N°:</strong>${contato.telefone}
   </h4>
-  <h4 class="text-xl text-gray-400 tracking-tight underline truncate">
-    ${contato.email}
+  <h4 class="text-xl text-gray-400 tracking-tight truncate">
+    <strong class="font-bold text-black mr-1">E-mail:</strong>${contato.email}
   </h4>
-  `) : null;
+`) : null;
 
-export const card_contato_cadastro = ({ id, nome = '', email = '', telefone = '', image = '' }) => cardCustom(`
+// TELAS
+export const cardContatoCadastro = ({ id, nome = '', email = '', telefone = '', image = '' } = {}) => cardCustom(`
   <h1 class="text-xl mb-5 font-bold">
     ${id ? 'Editar Contato' : 'Criar Novo Contato'}
   </h1>
@@ -185,35 +207,20 @@ export const card_contato_cadastro = ({ id, nome = '', email = '', telefone = ''
     </button>
   </div>
   <form id="formulario-cadastro" action="">
-    <div class="grid grid-cols-1 gap-5">
-      ${id ? inputCustom({ value: id, id: 'id', hidden: true, label: '#id' }) : ''}
-      ${inputCustom({ value: image, id: 'image', label: 'link da imagem', hidden: !!id })}
-      ${inputCustom({ value: nome, id: 'nome', label: 'nome' })}
-      ${inputCustom({ value: email, id: 'email', label: 'e-mail' })}
-      ${inputCustom({ value: telefone, id: 'telefone', label: 'n° contato' })}
+    <div class="space-y-5">
+      ${id ? inputCustom({ value: id, id: 'id', hidden: true, label: '#ID' }) : ''}
+      ${inputCustom({ value: image, id: 'image', label: 'Link da Imagem', hidden: !!id })}
+      ${inputCustom({ value: nome, id: 'nome', label: 'Nome' })}
+      ${inputCustom({ value: email, id: 'email', label: 'E-mail' })}
+      ${inputCustom({ value: telefone, id: 'telefone', label: 'n° Contato' })}
+      <div id="erro-requisicao" class="text-red-500 font-bold !mt-0"></div>
       <div class="flex gap-4">
         ${botaoCustom({ buttonType: 'submit', msg: 'salvar', type: 'success' })}
         ${botaoCustom({ href: '/', msg: 'cancelar', type: 'default' })}
         ${botaoCustom({ type: 'danger', id: 'excluir', hidden: !id, extraClasses: 'ml-auto', msg: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#fff"> <g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M10 12V17" stroke="#fff" stroke-width="1.7759999999999998" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M14 12V17" stroke="#fff" stroke-width="1.7759999999999998" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M4 7H20" stroke="#fff" stroke-width="1.7759999999999998" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M6 10V18C6 19.6569 7.34315 21 9 21H15C16.6569 21 18 19.6569 18 18V10" stroke="#fff" stroke-width="1.7759999999999998" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M9 5C9 3.89543 9.89543 3 11 3H13C14.1046 3 15 3.89543 15 5V7H9V5Z" stroke="#fff" stroke-width="1.7759999999999998" stroke-linecap="round" stroke-linejoin="round"></path> </g> </svg>' })}
+      </div>
     </div>
   <form>
-`);
-
-export const spinner = (absolute) => `
-  <div role="status" class="${absolute ? 'absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2' : 'py-20 flex justify-center'}">
-    <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-    </svg>
-    <span class="sr-only">Loading...</span>
-  </div>
-`;
-
-export const loadingSpinner = () => createElementFromString(`
-  <div class="absolute w-full h-full top-0 left-0">
-    <div class="acrylic">
-    </div>
-    ${spinner(true)}
-  </div>
 `);
 
 export const loginCard = (tipo = 'login') => createElementFromString(`

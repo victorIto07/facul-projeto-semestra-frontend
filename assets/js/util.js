@@ -1,5 +1,8 @@
 import { botaoCustom, headerCustom } from "./modelos-html.js";
 
+// LOGIN
+
+// RETORNA USUARIO JA ARMAZENADO
 export const loginCache = () => {
   const cache_login = localStorage.getItem('usuario_logado');
   if (!cache_login) return
@@ -7,6 +10,7 @@ export const loginCache = () => {
   return JSON.parse(cache_login);
 }
 
+// VALIDA E RETORNA SE HA USUARIO ARMAZENADO E VAI PARA A TELA DE LOGIN CASO CONTRARIO
 export const validarLogin = () => {
   const login_cache = loginCache();
 
@@ -18,6 +22,7 @@ export const validarLogin = () => {
   return login_cache;
 }
 
+// INSERE HEADER NO BODY E INSERE A MENSAGEM DE SAUDACOES SE HA USUARIO LOGADO
 export const prepararHeader = (usuario) => {
   document.body.insertBefore(headerCustom(), document.body.firstChild);
 
@@ -38,6 +43,7 @@ export const prepararHeader = (usuario) => {
   });
 }
 
+// CRIA E RETORNA UM ELEMENTO HTML COM BASE NA STRING DA MESMA
 export const createElementFromString = (string_html) => {
   if (!string_html) return
 
@@ -46,8 +52,9 @@ export const createElementFromString = (string_html) => {
   return el.firstElementChild;
 };
 
+// PREVENI MULTIPLAS CHAMADAS SEM NECESSIDADE(INPUTS, BOTOES, ETC..)
 export const debounce = (func, timeout = 300) => {
-  if (!func) throw new Error('functio not provided');
+  if (!func) throw new Error('funcao nao informada');
 
   let timer;
   return (...args) => {
@@ -56,14 +63,16 @@ export const debounce = (func, timeout = 300) => {
   };
 };
 
+// TIMER SIMPLES PARA SIMULACAO DE CHAMADAS
 export const wait = (ms = 300) => new Promise((resolve) => {
   setTimeout(() => { resolve() }, ms);
 });
 
+// RETORNA UM OBJETO COM BASE NOS DADOS DE UM FORMULARIO
 export const formData = ({ form, form_id }) => {
   if (!form && form_id)
     form = document.getElementById(form_id)
-  else if (!form && !form_id) throw new Error('form not specified');
+  else if (!form && !form_id) throw new Error('formulario nao identificado');
 
   const form_data = new FormData(form);
 
@@ -75,10 +84,7 @@ export const formData = ({ form, form_id }) => {
   return dados_form;
 }
 
+// NAVEGA PARA OUTRA TELA
 export const navigate = (url) => {
   window.location.replace(url);
-  // const _a = document.createElement('a');
-  // _a.href = url;
-  //
-  // _a.click();
 }

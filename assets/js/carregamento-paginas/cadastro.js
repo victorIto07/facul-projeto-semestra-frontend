@@ -1,6 +1,6 @@
 import { BuscarContato, CadastrarContato, AtualizarContato, ExcluirContato } from '/assets/js/servicos.js';
-import { card_contato_cadastro, spinner, loadingSpinner, cardCustom } from '/assets/js/modelos-html.js';
-import { debounce, formData, validarLogin, prepararHeader } from '/assets/js/util.js';
+import { cardContatoCadastro, spinner, carregamentoSpinner, cardCustom } from '/assets/js/modelos-html.js';
+import { debounce, formData, validarLogin, prepararHeader, navigate } from '/assets/js/util.js';
 
 const usuario = validarLogin();
 
@@ -8,57 +8,58 @@ document.addEventListener("DOMContentLoaded", async () => {
   prepararHeader(usuario);
 
   const url_params = new URLSearchParams(window.location.search);
-  const _id = url_params.get('id');
+  const id = url_params.get('id');
 
-  await carregarContato(_id);
+  await carregarContato(id);
 
   prepararMudancasFoto();
   prepararSalvar();
-  prepararExclusao(_id);
+  prepararExclusao(id);
 });
 
 const carregarContato = async (id) => {
-  const spinner_sem_conteudo = document.getElementById('content-cadastro').appendChild(cardCustom(spinner()));
+  const _spinner_sem_conteudo = document.getElementById('content-cadastro').appendChild(cardCustom(spinner()));
 
-  const contato = id ? await BuscarContato(id) : {};
-  const template_contato = card_contato_cadastro(contato);
+  const contato = id ? await BuscarContato(id) : null;
+  const _template_contato = cardContatoCadastro(contato);
 
-  spinner_sem_conteudo.remove();
-  document.getElementById('content-cadastro').appendChild(template_contato);
+  _spinner_sem_conteudo.remove();
+  document.getElementById('content-cadastro').appendChild(_template_contato);
 }
 
 const prepararMudancasFoto = () => {
-  const botao_editar_foto = document.getElementById('botao-editar-foto');
-  botao_editar_foto.addEventListener('click', () => {
-    const field_foto = document.getElementById('input-custom-image');
-    field_foto.classList.toggle('hidden');
-    input_link_foto.focus();
+  const _botao_editar_foto = document.getElementById('botao-editar-foto');
+
+  _botao_editar_foto.addEventListener('click', () => {
+    const _field_foto = document.getElementById('input-custom-image');
+    _field_foto.classList.toggle('hidden');
+    _input_link_foto.focus();
   });
 
-  const input_link_foto = document.getElementById('input-image');
+  const _input_link_foto = document.getElementById('input-image');
 
   const debounceLinkFoto = debounce((link) => {
-    const foto = document.getElementById('foto');
-    foto.firstElementChild.src = link;
-    foto.classList.remove('hidden');
+    const _foto = document.getElementById('foto');
+    _foto.firstElementChild.src = link;
+    _foto.classList.remove('hidden');
   }, 500);
 
-  input_link_foto.addEventListener('input', () => {
-    debounceLinkFoto(input_link_foto.value);
+  _input_link_foto.addEventListener('input', () => {
+    debounceLinkFoto(_input_link_foto.value);
   });
 }
 
-const exibirSpinner = () => document.getElementById('content-cadastro').firstElementChild.appendChild(loadingSpinner());
+const exibirSpinner = () => document.getElementById('content-cadastro').firstElementChild.appendChild(carregamentoSpinner());
 
 const prepararSalvar = () => {
-  const form = document.getElementById('formulario-cadastro');
-  form.addEventListener('submit', async (event) => {
+  const _form = document.getElementById('formulario-cadastro');
+  _form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    const spinner_loader = exibirSpinner();
+    const _spinner_loader = exibirSpinner();
 
     try {
-      const dados_contato = formData({ form });
+      const dados_contato = formData({ form: _form });
 
       let retorno_api;
       if (dados_contato.id)
@@ -68,19 +69,19 @@ const prepararSalvar = () => {
 
       navigate('/');
     } catch (e) {
-      console.error(e);
+      document.getElementById('erro-requisicao').innerText = '* ' + e.message || e;
     }
 
-    spinner_loader.remove();
+    _spinner_loader.remove();
   });
 }
 
 const prepararExclusao = (_id) => {
-  const botao_excluir = document.getElementById('botao-excluir');
-  if (!botao_excluir) return
+  const _botao_excluir = document.getElementById('botao-excluir');
+  if (!_botao_excluir) return
 
-  botao_excluir.addEventListener('click', async () => {
-    const spinner_loader = exibirSpinner();
+  _botao_excluir.addEventListener('click', async () => {
+    const _spinner_loader = exibirSpinner();
 
     try {
       await ExcluirContato(_id);
@@ -89,6 +90,6 @@ const prepararExclusao = (_id) => {
       console.error(e);
     }
 
-    spinner_loader.remove();
+    _spinner_loader.remove();
   });
 }
