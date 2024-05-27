@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 const carregarContato = async (id) => {
   const _spinner_sem_conteudo = document.getElementById('content-cadastro').appendChild(cardCustom(spinner()));
 
-  const contato = id ? await BuscarContato(id) : null;
+  const contato = id ? await BuscarContato(id) : {};
   const _template_contato = cardContatoCadastro(contato);
 
   _spinner_sem_conteudo.remove();

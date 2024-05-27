@@ -60,6 +60,10 @@ const carregarGrid = async (filtro) => {
   _grid.classList.add('grid', 'grid-cols-3', 'gap-1');
   _grid.innerHTML = '';
 
+  const _field_filtro = document.getElementById('field-filtro');
+  if (_field_filtro.children.length > 1)
+    _field_filtro.lastElementChild.remove();
+
   const _gridNovoConteudo = _grid.cloneNode(true);
 
   _grid.appendChild(cardCustom(spinner(), { center: false }));
@@ -82,8 +86,6 @@ const carregarGrid = async (filtro) => {
       );
 
       if (!contatos.length) {
-        const _field_filtro = document.getElementById('field-filtro');
-
         const _alert = _field_filtro.appendChild(alertCustom({ msg: 'Seu filtro desconsideirou todos os resultados.', type: 'info' }));
         wait(3000).then(() => { _alert.remove() });
 
