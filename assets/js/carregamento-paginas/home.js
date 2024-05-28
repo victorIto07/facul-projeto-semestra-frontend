@@ -1,4 +1,4 @@
-import { splideSlide, cardContato, botaoCustom, inputCustom, cardCustom, alertCustom, spinner } from '/assets/js/modelos-html.js'
+import { cardContato, botaoCustom, inputCustom, cardCustom, alertCustom, spinner, homeFiltro, gridContatos } from '/assets/js/modelos-html.js'
 import { BuscarListaContato } from '/assets/js/servicos.js';
 import { validarLogin, prepararHeader, debounce, wait } from '/assets/js/util.js';
 
@@ -6,26 +6,21 @@ const usuario = validarLogin();
 
 document.addEventListener("DOMContentLoaded", async () => {
   prepararHeader(usuario);
+  const [_filtro] = carregarTela();
 
-  carregarFiltro();
+  carregarFiltro(_filtro);
 
-  carregarSlider();
   carregarGrid();
 });
 
-const carregarFiltro = () => {
-  const _filtro = document.getElementById('field-filtro');
-  if (!_filtro) return
+const carregarTela = () => {
+  const _filtro = document.body.appendChild(homeFiltro());
+  const _grid = document.body.appendChild(gridContatos());
+  return [_filtro, _grid];
+}
 
-  const _botao_filtro = botaoCustom({ msg: 'Novo Contato', type: 'success', href: '/cadastro' });
-  let _input_filtro = inputCustom({ id: 'filtro', label: 'Filtro' });
-
-  const _card = cardCustom(_botao_filtro + _input_filtro, { col: false, center: false });
-  _card.classList.add('gap-3');
-
-  _filtro.appendChild(_card);
-
-  _input_filtro = _filtro.querySelector('#input-filtro');
+const carregarFiltro = (_filtro) => {
+  const _input_filtro = _filtro.querySelector('#input-filtro');
 
   const debounce_filtro = debounce(async (filtro) => {
     carregarGrid(filtro);
@@ -36,28 +31,11 @@ const carregarFiltro = () => {
   })
 }
 
-const carregarSlider = async () => {
-  const _slider = document.getElementById('slider-contatos');
-  if (!_slider) return
-
-  const contatos = await BuscarListaContato();
-
-  for (let contato of contatos) {
-    let _template_slide = splideSlide(contato);
-    if (!_template_slide) continue
-
-    _slider.appendChild(_template_slide);
-  }
-
-  const _splide = new Splide('#splide-carrossel', { 'type': 'loop', 'autoplay': true, 'interval': 2500, 'gap': '20px', 'arrows': false });
-  _splide.mount();
-}
-
 const carregarGrid = async (filtro) => {
   const _grid = document.getElementById('grid-contatos');
   if (!_grid) return
 
-  _grid.classList.add('grid', 'grid-cols-3', 'gap-1');
+  _grid.classList.add('grid');
   _grid.innerHTML = '';
 
   const _field_filtro = document.getElementById('field-filtro');
@@ -72,7 +50,7 @@ const carregarGrid = async (filtro) => {
     let contatos = await BuscarListaContato();
 
     if (!contatos || !contatos.length) {
-      _gridNovoConteudo.classList.remove('grid', 'grid-cols-3', 'gap-1');
+      _gridNovoConteudo.classList.remove('grid');
       _gridNovoConteudo.appendChild(alertCustom({ type: 'info', msg: 'Nenhum contato foi retornado' }));
     }
     else if (filtro) {
@@ -105,7 +83,7 @@ const carregarGrid = async (filtro) => {
       }
 
   } catch (error) {
-    _gridNovoConteudo.classList.remove('grid', 'grid-cols-3', 'gap-1');
+    _gridNovoConteudo.classList.remove('grid');
     _gridNovoConteudo.appendChild(alertCustom({ type: 'danger', msg: error.message || error.toString() }));
   }
 

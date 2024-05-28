@@ -18,13 +18,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 const carregarContato = async (id) => {
-  const _spinner_sem_conteudo = document.getElementById('content-cadastro').appendChild(cardCustom(spinner()));
+  const _spinner_sem_conteudo = document.body.appendChild(cardCustom(spinner()));
 
   const contato = id ? await BuscarContato(id) : {};
   const _template_contato = cardContatoCadastro(contato);
+  _template_contato.id = 'card-cadastro-contato';
 
   _spinner_sem_conteudo.remove();
-  document.getElementById('content-cadastro').appendChild(_template_contato);
+  document.body.appendChild(_template_contato);
 }
 
 const prepararMudancasFoto = () => {
@@ -49,7 +50,7 @@ const prepararMudancasFoto = () => {
   });
 }
 
-const exibirSpinner = () => document.getElementById('content-cadastro').firstElementChild.appendChild(carregamentoSpinner());
+const exibirSpinner = () => document.getElementById('card-cadastro-contato').appendChild(carregamentoSpinner());
 
 const prepararSalvar = () => {
   const _form = document.getElementById('formulario-cadastro');
