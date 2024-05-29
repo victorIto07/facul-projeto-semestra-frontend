@@ -1,6 +1,6 @@
-import { BuscarContato, CadastrarContato, AtualizarContato, ExcluirContato } from '/assets/js/servicos.js';
-import { cardContatoCadastro, spinner, carregamentoSpinner, cardCustom } from '/assets/js/modelos-html.js';
-import { debounce, formData, validarLogin, prepararHeader, navigate } from '/assets/js/util.js';
+import { BuscarContato, CadastrarContato, AtualizarContato, ExcluirContato } from '../servicos.js';
+import { cardContatoCadastro, spinner, carregamentoSpinner, cardCustom } from '../modelos-html.js';
+import { debounce, formData, validarLogin, prepararHeader, navigate } from '../util.js';
 
 const usuario = validarLogin();
 

@@ -1,6 +1,6 @@
-import { Logon } from '/assets/js/servicos.js';
-import { carregamentoSpinner, loginCard } from '/assets/js/modelos-html.js';
-import { formData, navigate, validarLogin } from '/assets/js/util.js';
+import { Logon } from '../servicos.js';
+import { carregamentoSpinner, loginCard } from '../modelos-html.js';
+import { formData, navigate, validarLogin } from '../util.js';
 
 const usuario_logado = validarLogin();
 if (usuario_logado) navigate('/');

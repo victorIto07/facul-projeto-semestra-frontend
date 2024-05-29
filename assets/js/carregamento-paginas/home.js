@@ -1,6 +1,6 @@
-import { cardContato, botaoCustom, inputCustom, cardCustom, alertCustom, spinner, homeFiltro, gridContatos } from '/assets/js/modelos-html.js'
-import { BuscarListaContato } from '/assets/js/servicos.js';
-import { validarLogin, prepararHeader, debounce, wait } from '/assets/js/util.js';
+import { cardContato, cardCustom, alertCustom, spinner, homeFiltro, gridContatos } from '../modelos-html.js'
+import { BuscarListaContato } from '../servicos.js';
+import { validarLogin, prepararHeader, debounce, wait } from '../util.js';
 
 const usuario = validarLogin();
 

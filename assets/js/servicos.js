@@ -44,7 +44,6 @@ export const chamadaAPI = (
         requisicao_parametros['body'] = JSON.stringify(body);
         requisicao_parametros['headers'] = {
           "Content-Type": "application/json",
-          "Mode": "cors",
         };
         requisicao_parametros['redirect'] = 'follow';
       }
